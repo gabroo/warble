@@ -6,20 +6,34 @@ project(Warble VERSION 1.0.0)
 # put cmake output into bin folder
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-# fetch grpc
+# fetch grpc and protobuf
+find_package(Protobuf REQUIRED)
+set(LIBPROTOBUF protobuf::libprotobuf)
+find_package(gRPC REQUIRED)
+set(GRPC_UNSECURE gRPC::grpc++_unsecure)
+
+if(gRPC_FOUND)
+  message(STATUS "Using gRPC ${gRPC_VERSION}")
+endif()
+
+if(Protobuf_FOUND)
+  message(STATUS "Using Protobuf ${Protobuf_VERSION}")
+endif()
+
+# make sure we find the cpp generator
+find_program(GRPC_CPP_PLUGIN NAMES grpc_cpp_plugin)
+if(GRPC_CPP_PLUGIN)
+  message(STATUS "Using converter ${GRPC_CPP_PLUGIN}")
+endif()
+
+# fetch googletest
 include(FetchContent)
 FetchContent_Declare(
-  gRPC
-  GIT_REPOSITORY https://github.com/grpc/grpc
-  GIT_TAG        v1.25.0
+  googletest
+  GIT_REPOSITORY https://github.com/google/googletest.git
+  GIT_TAG        release-1.10.0
 )
-FetchContent_MakeAvailable(gRPC)
-
-# check for Protobuf
-find_package(Protobuf REQUIRED)
-if(Protobuf_FOUND)
-  message(STATUS "Using Protocol Buffers ${Protobuf_VERSION}")
-endif()
+FetchContent_MakeAvailable(googletest)
 
 # function to make C++ files
 function(GRPC_GENERATE_CPP SRCS HDRS DEST)
@@ -60,15 +74,16 @@ function(GRPC_GENERATE_CPP SRCS HDRS DEST)
 
     list(APPEND ${SRCS} "${DEST}/${FIL_WE}.grpc.pb.cc")
     list(APPEND ${HDRS} "${DEST}/${FIL_WE}.grpc.pb.h")
-
+    message(STATUS "Trying to locate GRPC CPP converter: ${GRPC_CPP_PLUGIN}")
     add_custom_command(
       OUTPUT "${DEST}/${FIL_WE}.grpc.pb.cc"
              "${DEST}/${FIL_WE}.grpc.pb.h"
       COMMAND protobuf::protoc
-      ARGS --grpc_out ${DEST} ${_protobuf_include_path} --plugin=protoc-gen-grpc=${GRPC_CPP_PLUGIN} ${ABS_FIL}
+      ARGS --grpc_out=generate_mock_code=true:${DEST} ${_protobuf_include_path} --plugin=protoc-gen-grpc=${GRPC_CPP_PLUGIN} ${ABS_FIL}
       DEPENDS ${ABS_FIL} protobuf::protoc gRPC::grpc_cpp_plugin
       COMMENT "Running C++ gRPC compiler on ${FIL}"
-      VERBATIM )
+      VERBATIM 
+    )
   endforeach()
 
   set_source_files_properties(${${SRCS}} ${${HDRS}} PROPERTIES GENERATED TRUE)
@@ -77,7 +92,7 @@ function(GRPC_GENERATE_CPP SRCS HDRS DEST)
 endfunction()
 
 # generate .cc files for each .proto file
-file(GLOB PROTOS ${CMAKE_CURRENT_SOURCE_DIR}/protos/*.proto)
+file(GLOB PROTOS ${CMAKE_CURRENT_SOURCE_DIR}/*.proto)
 foreach(proto ${PROTOS})
   get_filename_component(PROTO_NAME_WE ${proto} NAME_WE)
   get_filename_component(PROTO_NAME ${proto} NAME)
@@ -89,5 +104,14 @@ foreach(proto ${PROTOS})
   grpc_generate_cpp(GRPC_SRCS GRPC_HDRS ${CMAKE_CURRENT_BINARY_DIR} ${proto})
   add_library(${PROTO_NAME_WE}.grpc STATIC ${GRPC_SRCS} ${GRPC_HDRS} ${PROTO_SRCS} ${PROTO_HDRS})
   target_include_directories(${PROTO_NAME_WE}.grpc PUBLIC ${GRPC_INCLUDE_DIR})
-  target_link_libraries(${PROTO_NAME_WE}.grpc grpc++)
+  target_link_libraries(${PROTO_NAME_WE}.grpc grpc++_reflection)
 endforeach()
+
+include_directories(${CMAKE_BINARY_DIR})
+add_executable(kvstore kvstore.cc)
+target_link_libraries(
+    kvstore PUBLIC
+    kvstore.grpc
+    ${LIBPROTOBUF}
+    ${GRPC_UNSECURE}
+)
