@@ -1,7 +1,7 @@
 /*
   Sajeev Saluja
   @gabroo
-  kvstore.cc
+  kvstore_service.cc
 
   Implements a key value store service with the following API:
     `put(key, value)` associates `value` with `key` in the store
@@ -11,10 +11,11 @@
   The service is made available via HTTP on port 50001.
 */
 
-#include <grpc++/grpc++.h>
-#include "kvstore.grpc.pb.h"
 #include <iostream>
 #include <unordered_map>
+#include <grpc++/grpc++.h>
+#include "kvstore.grpc.pb.h"
+#include "kvstore.h"
 
 using namespace kvstore;
 using namespace grpc;
@@ -24,7 +25,7 @@ class KeyValueService final : public KeyValueStore::Service {
   Status put(ServerContext* context, const PutRequest* request, PutReply* response) {
     // Puts the desired key from `request` into the store.
     std::string key = request->key(), value = request->value();
-    store_[key] = value;
+    store_.put(key, value);
     return Status::OK; 
   }
   
@@ -34,12 +35,12 @@ class KeyValueService final : public KeyValueStore::Service {
     GetRequest request;
     while (stream->Read(&request)) {
       std::string key = request.key();
-      auto search = store_.find(key); // search is a <k, v> pair
-      if (search == store_.end()) {
+      std::vector<std::string>
+      if (store.size() == 0) {
         return Status::CANCELLED;
       } else {
         GetReply reply;
-        reply.set_value(search->second);
+        reply.set_value();
         stream->Write(reply, WriteOptions());
       }
     } 
@@ -54,7 +55,7 @@ class KeyValueService final : public KeyValueStore::Service {
     return Status::OK;
   }
  private:
-  std::unordered_map<std::string, std::string> store_;
+  KeyValueStore store_;
 };
 
 int main () {
