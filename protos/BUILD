@@ -1,12 +1,14 @@
-load("@rules_cc//cc:defs.bzl", "cc_library")
-load("@rules_proto//proto:defs.bzl", "proto_library")
+package(default_visibility = ["//visibility:public"])
+
+load("@build_stack_rules_proto//cpp:cpp_grpc_library.bzl", "cpp_grpc_library")
 
 proto_library(
   name = "kvstore_proto",
   srcs = ["kvstore.proto"],
 )
 
-cc_proto_library(
-  name = "kvstore_cc_proto",
-  deps = [":kvstore_proto"],
+cpp_grpc_library(
+  name = "kvstore_cpp_proto",
+  srcs = ["kvstore.proto"],
+  deps = [":kvstore_proto"], 
 )
