@@ -2,20 +2,16 @@
 
 ## how to build
 1. setup a Vagrant VM with the [`ubuntu/bionic64`](https://app.vagrantup.com/ubuntu/boxes/bionic64) box
-2. install [protobuf](https://github.com/protocolbuffers/protobuf/tree/master/src) and [gRPC](https://github.com/grpc/grpc/blob/master/BUILDING.md)
+2. install [bazel](https://bazel.build)
 3. clone this repository:
 ```
 git clone https://github.com/gabroo/cs499_gabroo.git
 ```
-4. make a `build` directory:
+4. build the binaries 
 ```
-mkdir build && cd build
+bazel build kvstore:kvstore_server
 ```
-5. build the binaries:
+5. run the binaries
 ```
-cmake ..
-make
+./bazel-bin/kvstore/kvstore_server
 ```
-
-## how to run
-tbd
