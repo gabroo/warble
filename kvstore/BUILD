@@ -10,7 +10,7 @@ cc_library(
 
 cc_binary(
   name = "kvstore_server",
-  srcs = ["kvstore_server.cc"],
+  srcs = ["kvstore_server.cc", "kvstore_server.h"],
   includes = ["BAZEL_BUILD"],
   deps = [
     "@com_github_grpc_grpc//:grpc++",
