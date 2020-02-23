@@ -13,12 +13,21 @@
 
 #include <iostream>
 #include <unordered_map>
-#include <grpc++/grpc++.h>
-#include "kvstore.grpc.pb.h"
+#include <grpcpp/grpcpp.h>
+#include "protos/kvstore.grpc.pb.h"
 #include "kvstore.h"
 
-using namespace kvstore;
-using namespace grpc;
+using grpc::Status;
+using grpc::ServerContext;
+using grpc::ServerReaderWriter;
+using grpc::WriteOptions;
+using kvstore::KeyValueStore;
+using kvstore::PutRequest;
+using kvstore::PutReply;
+using kvstore::GetRequest;
+using kvstore::GetReply;
+using kvstore::RemoveRequest;
+using kvstore::RemoveReply;
 
 class KeyValueService final : public KeyValueStore::Service {
  public:
@@ -35,13 +44,15 @@ class KeyValueService final : public KeyValueStore::Service {
     GetRequest request;
     while (stream->Read(&request)) {
       std::string key = request.key();
-      std::vector<std::string>
-      if (store.size() == 0) {
+      std::vector<std::string> values = store_.get(key);
+      if (values.size() == 0) { // empty vector indicates key not in store
         return Status::CANCELLED;
       } else {
         GetReply reply;
-        reply.set_value();
-        stream->Write(reply, WriteOptions());
+        for (std::string v : values) {
+          reply.set_value(v);
+          stream->Write(reply, WriteOptions());
+        }
       }
     } 
     return Status::OK;
@@ -51,14 +62,17 @@ class KeyValueService final : public KeyValueStore::Service {
     // Removes the key value pair associated with the key in `request`.
     // If the key is invalid, it does nothing.
     std::string key = request->key();
-    store_.erase(key);
+    store_.remove(key);
     return Status::OK;
   }
  private:
-  KeyValueStore store_;
+  KVStore store_;
 };
 
 int main () {
+  using grpc::Server;
+  using grpc::ServerBuilder;
+  using grpc::InsecureServerCredentials;
   // Initializes a key value store service and connects it to port 50001.
   std::string address("0.0.0.0:50001");
   KeyValueService service;
