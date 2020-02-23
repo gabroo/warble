@@ -1,3 +1,5 @@
+package(default_visibility = ["//visibility:public"])
+
 load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
 
 cc_library(
@@ -7,10 +9,12 @@ cc_library(
 )
 
 cc_binary(
-  name = "kvstore_service",
-  srcs = ["kvstore_service.cc"],
+  name = "kvstore_server",
+  srcs = ["kvstore_server.cc"],
+  includes = ["BAZEL_BUILD"],
   deps = [
-    "//protos:kvstore_cpp_proto",
+    "@com_github_grpc_grpc//:grpc++",
+    "//protos:kvstore_grpc_library",
     ":kvstore",
   ]
 )
