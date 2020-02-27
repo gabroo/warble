@@ -18,35 +18,36 @@ class KVStoreTest : public ::testing::Test {
 };
 
 TEST_F(KVStoreTest, Put) {
-  EXPECT_EQ(store.put("key3", "val31"), 0);
-  EXPECT_EQ(store.put("newkey", "newval"), 0);
+  EXPECT_TRUE(store.put("key3", "val31"));
+  EXPECT_TRUE(store.put("newkey", "newval"));
 }
 
 TEST_F(KVStoreTest, Get) {
-  vector<string> vals;
-  vals = store.get("key1");
+  auto exists = store.get("key1");
+  auto vals = *exists;
   EXPECT_EQ((int)vals.size(), 2);
   EXPECT_EQ(vals[0], "val11");
   EXPECT_EQ(vals[1], "val12");
-  vals = store.get("key2");
+  exists = store.get("key2");
+  vals = *exists;
   EXPECT_EQ((int)vals.size(), 1);
   EXPECT_EQ(vals[0], "val2");
-  vals = store.get("key3");
+  exists = store.get("key3");
+  vals = *exists;
   EXPECT_EQ((int)vals.size(), 1);
   EXPECT_EQ(vals[0], "val3"); 
+  EXPECT_FALSE(exists = store.get("not_a_key"));
 }
 
 TEST_F(KVStoreTest, Remove) {
-  vector<string> vals;
-  EXPECT_EQ(store.remove("key1"), 0);
-  vals = store.get("key1");
-  EXPECT_EQ((int)vals.size(), 0);
-  EXPECT_EQ(store.remove("key2"), 0);
-  vals = store.get("key2");
-  EXPECT_EQ((int)vals.size(), 0);
-  EXPECT_EQ(store.remove("key3"), 0);
-  vals = store.get("key3");
-  EXPECT_EQ((int)vals.size(), 0);
+  std::optional<std::vector<std::string>> exists;
+  EXPECT_TRUE(store.remove("key1"));
+  EXPECT_FALSE(exists = store.get("key1"));
+  EXPECT_TRUE(store.remove("key2"));
+  EXPECT_FALSE(exists = store.get("key2"));
+  EXPECT_TRUE(store.remove("key3"));
+  EXPECT_FALSE(exists = store.get("key3"));
+  EXPECT_FALSE(store.remove("not_a_key"));
 }
 
 int main(int argc, char** argv) {
