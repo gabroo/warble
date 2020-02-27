@@ -1,0 +1,14 @@
+# build options
+build --color=yes
+build --cxxopt='-std=c++17'
+
+# build targets
+build kvstore:kvstore_server
+
+# test options
+test --test_output=all
+
+# test targets
+test tests:kvstore_test
+
+# run targets
