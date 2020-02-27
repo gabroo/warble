@@ -7,12 +7,13 @@
 */
 #include <unordered_map>
 #include <vector>
+#include <optional>
 
 class KVStore {
  public:
-  int put(const std::string&, const std::string&);
-  std::vector<std::string> get(const std::string&);
-  int remove(const std::string&);
+  bool put(const std::string&, const std::string&);
+  std::optional<std::vector<std::string>> get(const std::string&);
+  bool remove(const std::string&);
  private:
   std::unordered_map<std::string, std::vector<std::string>> map_;
 };
