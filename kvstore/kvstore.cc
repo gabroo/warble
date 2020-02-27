@@ -15,20 +15,24 @@
 
 #include "kvstore.h"
 
-int KVStore::put(const std::string &key, const std::string &value) {
+bool KVStore::put(const std::string &key, const std::string &value) {
   map_[key].push_back(value);
-  return 0;
+  return true;
 }
 
-std::vector<std::string> KVStore::get(const std::string &key) {
+std::optional<std::vector<std::string>> KVStore::get(const std::string &key) {
   if (map_.find(key) != map_.end()) {
     return map_[key];
   } else {
-    return std::vector<std::string>();
+    return std::nullopt;
   }
 }
 
-int KVStore::remove(const std::string &key) {
-  map_.erase(key);
-  return 0;
+bool KVStore::remove(const std::string &key) {
+  if (map_.find(key) == map_.end()) {
+    return false; // could not find key in map
+  } else {
+    map_.erase(key);
+    return true;
+  }
 }

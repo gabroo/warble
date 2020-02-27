@@ -26,15 +26,14 @@ Status KeyValueServer::get(ServerContext* context, ServerReaderWriter<GetReply, 
   GetRequest request;
   while (stream->Read(&request)) {
     std::string key = request.key();
-    std::vector<std::string> values = store_.get(key);
-    if (values.size() == 0) { // empty vector indicates key not in store
-      return Status::CANCELLED;
-    } else {
+    if (auto values = store_.get(key)) { // empty vector indicates key not in store
       GetReply reply;
-      for (std::string v : values) {
+      for (std::string v : *values) {
         reply.set_value(v);
         stream->Write(reply, WriteOptions());
       }
+    } else {
+      return Status::CANCELLED;
     }
   } 
   return Status::OK;
