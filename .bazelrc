@@ -12,3 +12,4 @@ test --test_output=all
 test tests:kvstore_test
 
 # run targets
+
