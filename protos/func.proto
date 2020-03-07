@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+import "google/protobuf/any.proto";
+
+package func;
+
+message HookRequest {
+  int32 event_type = 1;
+  string event_function = 2;
+}
+
+message HookReply {
+  // Signaled by gRPC status.
+}
+
+message UnhookRequest {
+  int32 event_type = 1;
+}
+
+message UnhookReply {
+  // Signaled by gRPC status.
+}
+
+message EventRequest {
+  int32 event_type = 1;
+  google.protobuf.Any payload = 2; // function arguments
+}
+
+message EventReply {
+  google.protobuf.Any payload = 1; // function returns
+}
+
+service FuncService {
+  rpc hook (HookRequest) returns (HookReply) {}
+  rpc unhook (UnhookRequest) returns (UnhookReply) {}
+  rpc event (EventRequest) returns (EventReply) {}
+}

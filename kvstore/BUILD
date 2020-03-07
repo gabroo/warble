@@ -16,5 +16,5 @@ cc_binary(
     "@com_github_grpc_grpc//:grpc++",
     "//protos:kvstore_grpc_library",
     ":kvstore",
-  ]
+  ],
 )
