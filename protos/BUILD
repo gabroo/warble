@@ -11,7 +11,6 @@ cc_grpc_library(
 cc_grpc_library(
   name = "func_grpc_library",
   srcs = ["func.proto"],
-  deps = [
-    "@com_google_protobuf//:any_proto",
-  ],
+  deps = [],
+  well_known_protos = True,
 )
