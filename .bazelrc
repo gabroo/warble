@@ -3,13 +3,13 @@ build --color=yes
 build --cxxopt='-std=c++17'
 
 # build targets
-build:all kvstore:kvstore_server
+build:all kvstore:server func:server
 
 # test options
 test --test_output=all
 
 # test targets
-test:all tests:kvstore_test
+test:all tests:kvstore
 
 # clean options
 clean --async

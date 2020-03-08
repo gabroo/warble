@@ -1,2 +1,4 @@
 bazel*
 *.swp
+*.code-workspace
+.vscode
