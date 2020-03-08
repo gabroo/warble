@@ -1,10 +1,12 @@
+load("@rules_cc//cc:defs.bzl", "cc_test")
+
 cc_test(
-  name = "kvstore_test",
-  srcs = ["kvstore_test.cc"],
+  name = "kvstore",
+  srcs = ["kvstore.cc"],
   copts = ["-Iexternal/gtest/include"],
   deps = [
     "@gtest//:main",
-    "//kvstore:kvstore",
+    "//kvstore:store",
   ],
   timeout = "short",
 )

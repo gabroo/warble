@@ -29,6 +29,6 @@ message RemoveReply {
 
 service KeyValueStore {
   rpc put (PutRequest) returns (PutReply) {}
-  rpc get (stream GetRequest) returns (stream GetReply) {}
+  rpc get (GetRequest) returns (stream GetReply) {}
   rpc remove (RemoveRequest) returns (RemoveReply) {}
 }
