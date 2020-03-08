@@ -1,9 +1,9 @@
 /*
   Sajeev Saluja
   @gabroo
-  kvstore.h
-  
-  Backend key value store headers. See kvstore.cc for implementation details.
+  kvstore/store.h
+
+  Backend key value store headers. See kvstore/store.cc for implementation.
 */
 #include <unordered_map>
 #include <vector>

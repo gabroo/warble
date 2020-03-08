@@ -1,7 +1,7 @@
 /*
   Sajeev Saluja
   @gabroo
-  kvstore.cc
+  kvstore/store.cc
 
   Basic key value store with the following API:
     `put(key, value)` associates `value` with `key` in the store

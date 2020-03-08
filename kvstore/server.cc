@@ -1,7 +1,7 @@
 /*
   Sajeev Saluja
   @gabroo
-  kvstore_server.cc
+  kvstore/server.cc
 
   Implements a key value store service with the following API:
     `put(key, value)` associates `value` with `key` in the store
