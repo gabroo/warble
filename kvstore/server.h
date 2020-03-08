@@ -1,9 +1,9 @@
 /*
   Sajeev Saluja
   @gabroo
-  kvstore_server.h
+  kvstore/server.h
 
-  Forward declarations for kvstore_server.cc
+  Forward declarations for kvstore/server.cc
 */
 
 #include <iostream>
