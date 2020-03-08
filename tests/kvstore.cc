@@ -1,6 +1,6 @@
 #include <vector>
 #include "gtest/gtest.h"
-#include "kvstore/kvstore.h"
+#include "kvstore/store.h"
 
 using std::vector;
 using std::string;

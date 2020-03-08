@@ -13,7 +13,7 @@
     - modify keys to include namespaces (ie, bitstrings)
 */
 
-#include "kvstore.h"
+#include "store.h"
 
 bool KVStore::put(const std::string &key, const std::string &value) {
   map_[key].push_back(value);
