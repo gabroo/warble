@@ -6,6 +6,7 @@
 	Forward declarations for the Warble command line interface.
 */
 
+#include <iostream>
 #include <grpc++/grpc++.h>
 #include "protos/warble.pb.h"
 #include "protos/func.grpc.pb.h"
@@ -22,9 +23,3 @@ class CLI {
  private:
   std::unique_ptr<FuncService::Stub> stub_; // interface to Func
 };
-
-int main (int argc, char** argv) {
-	std::string address("0.0.0.0:50000");
-	CLI cli(CreateChannel(address, InsecureChannelCredentials()));
-	cli.start();
-}
