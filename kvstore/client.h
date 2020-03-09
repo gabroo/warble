@@ -1,3 +1,6 @@
+#ifndef KVCLIENT_H
+#define KVCLIENT_H
+
 #include <vector>
 #include <optional>
 #include <thread>
@@ -15,3 +18,5 @@ class KVStoreClient {
  private:
   std::unique_ptr<KeyValueStore::Stub> stub_;
 };
+
+#endif // !KVCLIENT_H
