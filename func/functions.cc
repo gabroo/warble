@@ -1,11 +1,17 @@
 #include "functions.h"
 
-using warble::RegisterUserRequest,
+using warble::Warble,
+      warble::Timestamp,
+      warble::RegisterUserRequest,
       warble::RegisterUserReply,
       warble::WarbleRequest,
       warble::WarbleReply,
-      warble::Warble,
-      warble::Timestamp;
+      warble::FollowRequest,
+      warble::FollowReply,
+      warble::ReadRequest,
+      warble::ReadReply,
+      warble::ProfileRequest,
+      warble::ProfileReply;
 
 
 bool WarbleFuncManager::execute(std::string function, Message* req, Message* rep) {
@@ -40,5 +46,20 @@ bool WarbleFuncManager::Warble(Message* req, Message* rep) {
     warble_id = username + "0";
   }
   db_.put(key, warble_id);
+  return true;
+}
+
+bool WarbleFuncManager::Follow(Message* req, Message* rep) {
+  FollowRequest* request = reinterpret_cast<FollowRequest*>(req);
+  return true;
+}
+
+bool WarbleFuncManager::Read(Message* req, Message* rep) {
+  ReadRequest* request = reinterpret_cast<ReadRequest*>(req);
+  return true;
+}
+
+bool WarbleFuncManager::Profile(Message* req, Message* rep) {
+  ProfileRequest* request = reinterpret_cast<ProfileRequest*>(req);
   return true;
 }
