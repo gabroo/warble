@@ -14,3 +14,10 @@ cc_grpc_library(
   deps = [],
   well_known_protos = True,
 )
+
+cc_grpc_library(
+  name = "warble_grpc_library",
+  srcs = ["warble.proto"],
+  deps = [],
+  proto_only = True,
+)
