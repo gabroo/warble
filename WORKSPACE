@@ -12,10 +12,18 @@ http_archive(
 # fetch googletest
 http_archive(
   name = "gtest",
-  url = "https://github.com/google/googletest/archive/release-1.7.0.zip",
+  url = "https://github.com/google/googletest/archive/release-1.7.0.tar.gz",
   sha256 = "b58cb7547a28b2c718d1e38aee18a3659c9e3ff52440297e965f5edffe34b6d0",
   strip_prefix = "googletest-release-1.7.0",
   build_file = "@//tests:gtest.BUILD",
+)
+
+# fetch gflags
+http_archive(
+  name = "com_github_gflags_gflags",
+  url = "https://github.com/gflags/gflags/archive/v2.2.0.tar.gz",
+  sha256 = "466c36c6508a451734e4f4d76825cf9cd9b8716d2b70ef36479ae40f08271f88",
+  strip_prefix = "gflags-2.2.0",
 )
 
 # load grpc dependencies
