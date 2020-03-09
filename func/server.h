@@ -1,16 +1,25 @@
 /*
   Sajeev Saluja
   @gabroo
-  func_server.h
+  func/server.h
 
-  Forward declarations for func_server.cc
+  Forward declarations for func/server.cc
 */
+
+#ifndef FUNCSERVER_H
+#define FUNCSERVER_H
 
 #include <iostream>
 #include <grpc++/grpc++.h>
 #include "protos/func.grpc.pb.h"
 #include "protos/kvstore.grpc.pb.h"
 #include "kvstore/client.h"
+#include "protos/warble.pb.h"
+#include "functions.h"
+
+using warble::RegisterUserRequest,
+      warble::RegisterUserReply,
+      grpc::protobuf::Message;
 
 using grpc::Status,
       grpc::ServerContext,
@@ -27,12 +36,17 @@ using grpc::Status,
       func::EventReply,
       kvstore::KeyValueStore;
 
+
 class FuncServer final : public FuncService::Service {
  public:
-  FuncServer() : kvc_(CreateChannel("0.0.0.0:50001", InsecureChannelCredentials())) {};
+  FuncServer(std::string target) : funcs_(target) {};
   Status hook(ServerContext*, const HookRequest*, HookReply*);
   Status unhook(ServerContext*, const UnhookRequest*, UnhookReply*);
   Status event(ServerContext*, const EventRequest*, EventReply*);
+
  private:
-  KVStoreClient kvc_;
+  std::unordered_map<int, std::string> events_;
+  WarbleFuncManager funcs_;
 };
+
+#endif // !FUNCSERVER_H
