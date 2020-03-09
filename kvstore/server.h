@@ -6,6 +6,9 @@
   Forward declarations for kvstore/server.cc
 */
 
+#ifndef KVSERVER_H
+#define KVSERVER_H
+
 #include <iostream>
 #include <unordered_map>
 #include <grpc++/grpc++.h>
@@ -32,3 +35,5 @@ class KVStoreServer final : public KeyValueStore::Service {
  private:
   KVStore store_;
 };
+
+#endif // !KVSERVER_H

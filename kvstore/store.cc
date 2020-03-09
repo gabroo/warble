@@ -16,7 +16,17 @@
 #include "store.h"
 
 bool KVStore::put(const std::string &key, const std::string &value) {
-  map_[key].push_back(value);
+  if (map_.find(key) == map_.end()) {
+    map_[key].push_back(value);
+  } else {
+    std::vector<std::string> vals = map_[key];
+    auto find = std::find(vals.begin(), vals.end(), value);
+    if (find != vals.end()) {
+      return false;
+    } else {
+      map_[key].push_back(value);
+    }
+  }
   return true;
 }
 
