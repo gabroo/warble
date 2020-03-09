@@ -1,6 +1,7 @@
 # build options
 build --color=yes
 build --cxxopt='-std=c++17'
+build -c dbg # temporary
 
 # build targets
 build:all kvstore:server func:server
