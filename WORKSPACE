@@ -26,6 +26,15 @@ http_archive(
   strip_prefix = "gflags-2.2.0",
 )
 
+# fetch glog
+http_archive(
+  name = "com_github_google_glog",
+  url = "https://github.com/google/glog/archive/v0.4.0.tar.gz",
+  sha256 = "f28359aeba12f30d73d9e4711ef356dc842886968112162bc73002645139c39c",
+  strip_prefix = "glog-0.4.0",
+  build_file = "@//tests:glog.BUILD",
+)
+
 # load grpc dependencies
 load("@com_github_grpc_grpc//bazel:grpc_deps.bzl", "grpc_deps")
 grpc_deps()
