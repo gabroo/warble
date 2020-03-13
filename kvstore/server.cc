@@ -13,7 +13,8 @@
 
 #include "server.h"
 
-Status KVStoreServer::put(ServerContext* context, const PutRequest* request, PutReply* response) {
+Status KVStoreServer::put(ServerContext* context, const PutRequest* request,
+                          PutReply* response) {
   // Puts the desired key from `request` into the store.
   std::string key = request->key(), value = request->value();
   store_.put(key, value);
@@ -21,12 +22,14 @@ Status KVStoreServer::put(ServerContext* context, const PutRequest* request, Put
   return Status::OK;
 }
 
-Status KVStoreServer::get(ServerContext* context, const GetRequest* request, ServerWriter<GetReply>* stream) {
+Status KVStoreServer::get(ServerContext* context, const GetRequest* request,
+                          ServerWriter<GetReply>* stream) {
   // Responds to keys in `stream` with their associated values.
   // If a key is not in the store, theh operation is cancelled.
   std::string key = request->key();
   LOG(INFO) << "getting {" << key << "}";
-  if (auto values = store_.get(key)) { // empty vector indicates key not in store
+  if (auto values =
+          store_.get(key)) {  // empty vector indicates key not in store
     for (std::string v : *values) {
       GetReply reply;
       reply.set_value(v);
@@ -38,7 +41,9 @@ Status KVStoreServer::get(ServerContext* context, const GetRequest* request, Ser
   return Status::OK;
 }
 
-Status KVStoreServer::remove(ServerContext* context, const RemoveRequest* request, RemoveReply* response) {
+Status KVStoreServer::remove(ServerContext* context,
+                             const RemoveRequest* request,
+                             RemoveReply* response) {
   // Removes the key value pair associated with the key in `request`.
   // If the key is invalid, it does nothing.
   std::string key = request->key();
@@ -47,10 +52,8 @@ Status KVStoreServer::remove(ServerContext* context, const RemoveRequest* reques
   return Status::OK;
 }
 
-int main (int argc, char** argv) {
-  using grpc::Server,
-        grpc::ServerBuilder,
-        grpc::InsecureServerCredentials;
+int main(int argc, char** argv) {
+  using grpc::Server, grpc::ServerBuilder, grpc::InsecureServerCredentials;
 
   google::InitGoogleLogging(argv[0]);
   // Initializes a key value store service and connects it to port 50001.

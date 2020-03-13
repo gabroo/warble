@@ -5,15 +5,12 @@
 
 class FakeDB : public Database {
  public:
-  bool put(std::string key, std::string val) {
-    return store_.put(key, val);
-  }
+  bool put(std::string key, std::string val) { return store_.put(key, val); }
   std::optional<std::vector<std::string>> get(std::string key) {
     return store_.get(key);
   }
-  bool remove(std::string key) {
-    return store_.remove(key);
-  }
+  bool remove(std::string key) { return store_.remove(key); }
+
  private:
   KVStore store_;
 };
@@ -49,7 +46,6 @@ TEST_F(FuncsTest, Warble) {
   w_req.set_username("not_a_user_that_exists");
   req.PackFrom(w_req);
   EXPECT_FALSE(Follow(&db, req, &rep));
-
 }
 
 TEST_F(FuncsTest, Follow) {

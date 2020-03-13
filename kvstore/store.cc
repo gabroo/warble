@@ -40,7 +40,7 @@ std::optional<std::vector<std::string>> KVStore::get(const std::string &key) {
 
 bool KVStore::remove(const std::string &key) {
   if (map_.find(key) == map_.end()) {
-    return false; // could not find key in map
+    return false;  // could not find key in map
   } else {
     map_.erase(key);
     return true;

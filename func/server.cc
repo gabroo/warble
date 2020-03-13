@@ -15,12 +15,14 @@
 
 #include "server.h"
 
-Status FuncServer::hook(ServerContext* context, const HookRequest* request, HookReply* reply) {
+Status FuncServer::hook(ServerContext* context, const HookRequest* request,
+                        HookReply* reply) {
   int event_type = request->event_type();
   std::string event_function = request->event_function();
   if (events_.find(event_type) == events_.end()) {
     events_.insert({event_type, event_function});
-    LOG(INFO) << "hooked function " << event_function << " to type " << event_type;
+    LOG(INFO) << "hooked function " << event_function << " to type "
+              << event_type;
     return Status::OK;
   } else {
     LOG(INFO) << "function already hooked " << event_function;
@@ -28,7 +30,8 @@ Status FuncServer::hook(ServerContext* context, const HookRequest* request, Hook
   }
 }
 
-Status FuncServer::unhook(ServerContext* context, const UnhookRequest* request, UnhookReply* reply) {
+Status FuncServer::unhook(ServerContext* context, const UnhookRequest* request,
+                          UnhookReply* reply) {
   int event_type = request->event_type();
   if (events_.find(event_type) == events_.end()) {
     LOG(INFO) << "event type " << event_type << " not already in use.";
@@ -41,14 +44,16 @@ Status FuncServer::unhook(ServerContext* context, const UnhookRequest* request, 
   return Status::OK;
 }
 
-Status FuncServer::event(ServerContext* context, const EventRequest* request, EventReply* reply) {
+Status FuncServer::event(ServerContext* context, const EventRequest* request,
+                         EventReply* reply) {
   int event_type = request->event_type();
   if (events_.find(event_type) == events_.end()) {
     return Status::CANCELLED;
   } else {
     std::string event_function = events_[event_type];
     Any tx_payload = request->payload();
-    fn function = funcs[event_function]; // fn defined in functions.h (warble function)
+    fn function =
+        funcs[event_function];  // fn defined in functions.h (warble function)
     Any rx_payload;
     bool ok = function(&db_, tx_payload, &rx_payload);
     *(reply->mutable_payload()) = rx_payload;
@@ -62,12 +67,9 @@ Status FuncServer::event(ServerContext* context, const EventRequest* request, Ev
   }
 }
 
-int main (int argc, char** argv) {
-  using grpc::Server,
-        grpc::ServerBuilder,
-        grpc::InsecureServerCredentials,
-        grpc::InsecureChannelCredentials,
-        grpc::CreateChannel;
+int main(int argc, char** argv) {
+  using grpc::Server, grpc::ServerBuilder, grpc::InsecureServerCredentials,
+      grpc::InsecureChannelCredentials, grpc::CreateChannel;
 
   google::InitGoogleLogging(argv[0]);
   // Initialize func server and connect to port 50000.

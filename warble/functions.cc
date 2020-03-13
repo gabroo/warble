@@ -6,7 +6,9 @@ bool RegisterUser(Database* db, Any req, Any* rep) {
   std::string username = request.username();
   auto exists = db->get("_users_");
   if (exists) {
-    if (std::find((*exists).begin(), (*exists).end(), username) != (*exists).end()) return false;
+    if (std::find((*exists).begin(), (*exists).end(), username) !=
+        (*exists).end())
+      return false;
     LOG(INFO) << "User " << username << " already exists.";
   }
   db->put("_users_", username);
@@ -17,13 +19,13 @@ bool RegisterUser(Database* db, Any req, Any* rep) {
 bool Warble(Database* db, Any req, Any* rep) {
   WarbleRequest request;
   req.UnpackTo(&request);
-  std::string username = request.username(),
-              text = request.text(),
-              parent_id = request.parent_id(),
-              key = "_warbles_"+username;
+  std::string username = request.username(), text = request.text(),
+              parent_id = request.parent_id(), key = "_warbles_" + username;
   auto exists = db->get("_users_");
   if (exists) {
-    if (std::find((*exists).begin(), (*exists).end(), username) == (*exists).end()) return false;
+    if (std::find((*exists).begin(), (*exists).end(), username) ==
+        (*exists).end())
+      return false;
   } else {
     return false;
   }
@@ -51,9 +53,9 @@ bool Warble(Database* db, Any req, Any* rep) {
   std::string w_as_string;
   w.SerializeToString(&w_as_string);
   db->put(key, warble_id);
-  db->put("_warble_"+warble_id, w_as_string);
+  db->put("_warble_" + warble_id, w_as_string);
   if (!parent_id.empty()) {
-    db->put("_reply_"+parent_id, warble_id);
+    db->put("_reply_" + parent_id, warble_id);
   } else {
     LOG(INFO) << "no parent id found " << parent_id;
   }
@@ -63,23 +65,25 @@ bool Warble(Database* db, Any req, Any* rep) {
 bool Follow(Database* db, Any req, Any* rep) {
   FollowRequest request;
   req.UnpackTo(&request);
-  std::string username = request.username(),
-              to_follow = request.to_follow();
+  std::string username = request.username(), to_follow = request.to_follow();
   // check if both users exist
   std::optional<std::vector<std::string>> users = db->get("_users_");
   if (users) {
     bool found1 = false, found2 = false;
     for (std::string u : *users) {
-      if (u.compare(username) == 0) found1 = true;
-      else if (u.compare(to_follow) == 0) found2 = true;
+      if (u.compare(username) == 0)
+        found1 = true;
+      else if (u.compare(to_follow) == 0)
+        found2 = true;
     }
     if (!(found1 && found2)) {
       LOG(INFO) << "Could not find both users for follow request.";
       return false;
     } else {
-      db->put("_following_"+username, to_follow);
-      db->put("_followers_"+to_follow, username);
-      LOG(INFO) << "Added follow relation between " << username << " and " << to_follow;
+      db->put("_following_" + username, to_follow);
+      db->put("_followers_" + to_follow, username);
+      LOG(INFO) << "Added follow relation between " << username << " and "
+                << to_follow;
       return true;
     }
   } else {
@@ -92,7 +96,7 @@ bool Read(Database* db, Any req, Any* rep) {
   ReadReply reply;
   req.UnpackTo(&request);
   std::string id = request.warble_id();
-  std::optional<std::vector<std::string>> exists = db->get("_warble_"+id);
+  std::optional<std::vector<std::string>> exists = db->get("_warble_" + id);
   if (exists) {
     warble::Warble* og = reply.add_warbles();
     og->ParseFromString((*exists)[0]);
@@ -100,10 +104,11 @@ bool Read(Database* db, Any req, Any* rep) {
     while (!s.empty()) {
       std::string cur_id = s.top();
       s.pop();
-      std::optional<std::vector<std::string>> replies = db->get("_reply_"+cur_id);
+      std::optional<std::vector<std::string>> replies =
+          db->get("_reply_" + cur_id);
       if (replies) {
         for (std::string r : *replies) {
-          exists = db->get("_warble_"+r);
+          exists = db->get("_warble_" + r);
           if (exists) {
             warble::Warble* w = reply.add_warbles();
             w->ParseFromString((*exists)[0]);
@@ -128,7 +133,8 @@ bool Profile(Database* db, Any req, Any* rep) {
   std::string username = request.username();
   auto exists = db->get("_users_");
   if (exists) {
-    if (std::find((*exists).begin(), (*exists).end(), username) == (*exists).end()) {
+    if (std::find((*exists).begin(), (*exists).end(), username) ==
+        (*exists).end()) {
       LOG(INFO) << "User does not exist.";
       return false;
     }
@@ -136,14 +142,16 @@ bool Profile(Database* db, Any req, Any* rep) {
     LOG(INFO) << "User does not exist.";
     return false;
   }
-  std::optional<std::vector<std::string>> followers = db->get("_followers_"+username);
+  std::optional<std::vector<std::string>> followers =
+      db->get("_followers_" + username);
   if (followers) {
     for (std::string f : *followers) {
       std::string* s = reply.add_followers();
       *s = f;
     }
   }
-  std::optional<std::vector<std::string>> following = db->get("_following_"+username);
+  std::optional<std::vector<std::string>> following =
+      db->get("_following_" + username);
   if (following) {
     for (std::string f : *following) {
       std::string* s = reply.add_following();
