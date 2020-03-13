@@ -37,6 +37,7 @@
 using grpc::ChannelInterface, grpc::CreateChannel,
     grpc::InsecureChannelCredentials, func::FuncService;
 
+// Bridge between the main program (warble.cc) and the gRPC servers.
 class CLI {
  public:
   CLI(std::shared_ptr<ChannelInterface> channel)
@@ -44,6 +45,7 @@ class CLI {
         functions_({"register_user", "warble", "follow", "read", "profile"}) {
     RegisterFunctions();
   };
+  // See functions.h for more details about these functions
   void RegisterFunctions();
   void RegisterUser(std::string);
   void Warble(std::string, std::string, std::string);

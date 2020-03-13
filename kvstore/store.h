@@ -14,9 +14,11 @@
 #include <unordered_map>
 #include <vector>
 
+// Backend data structure for storing values in memory, using std::unordered_map.
 class KVStore {
  public:
   bool put(const std::string&, const std::string&);
+  // Keys that do not have values will return std::nullopt
   std::optional<std::vector<std::string>> get(const std::string&);
   bool remove(const std::string&);
 

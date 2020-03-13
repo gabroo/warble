@@ -10,6 +10,7 @@
 
 using kvstore::KeyValueStore, grpc::ChannelInterface;
 
+// A Database client that is specific to the gRPC-loaded KVStoreServer (see kvstore/server.h)
 class KVStoreClient : public Database {
  public:
   KVStoreClient(std::shared_ptr<ChannelInterface> channel)
@@ -19,6 +20,7 @@ class KVStoreClient : public Database {
   bool remove(std::string);
 
  private:
+  // Pointer to the gRPC client stub
   std::unique_ptr<KeyValueStore::Stub> stub_;
 };
 
