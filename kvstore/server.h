@@ -12,6 +12,7 @@
 #include <iostream>
 #include <unordered_map>
 #include <grpc++/grpc++.h>
+#include <glog/logging.h>
 #include "protos/kvstore.grpc.pb.h"
 #include "store.h"
 

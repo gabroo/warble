@@ -11,8 +11,10 @@
 #define FUNCTIONS_H
 
 #include <iostream>
+#include <stack>
 #include <grpc++/grpc++.h>
-#include "kvstore/client.h"
+#include "glog/logging.h"
+#include "kvstore/db.h"
 #include "protos/warble.pb.h"
 #include "protos/func.pb.h"
 
@@ -20,7 +22,6 @@ using google::protobuf::Message,
       google::protobuf::Any,
       grpc::CreateChannel,
       grpc::InsecureChannelCredentials,
-      warble::Warble,
       warble::Timestamp,
       warble::RegisterUserRequest,
       warble::RegisterUserReply,
@@ -35,13 +36,13 @@ using google::protobuf::Message,
       func::EventRequest,
       func::EventReply;
 
-bool RegisterUser(const KVStoreClient &db, Any, Any);
-bool Warble(const KVStoreClient &db, Any, Any);
-bool Follow(const KVStoreClient &db, Any, Any);
-bool Read(const KVStoreClient &db, Any, Any);
-bool Profile(const KVStoreClient &db, Any, Any);
+bool RegisterUser(Database* db, Any, Any*);
+bool Warble(Database* db, Any, Any*);
+bool Follow(Database* db, Any, Any*);
+bool Read(Database* db, Any, Any*);
+bool Profile(Database* db, Any, Any*);
 
-typedef std::function<bool(const KVStoreClient&, Any, Any)> fn;
+typedef std::function<bool(Database*, Any, Any*)> fn;
 static std::unordered_map<std::string, fn> funcs({
   {"register_user", RegisterUser},
   {"warble", Warble},

@@ -11,7 +11,7 @@ cc_library(
 cc_library(
   name = "client",
   srcs = ["client.cc"],
-  hdrs = ["client.h"],
+  hdrs = ["client.h", "db.h"],
   includes = ["BAZEL_BUILD"],
   deps = [
     "@com_github_grpc_grpc//:grpc++",
@@ -25,6 +25,7 @@ cc_binary(
   includes = ["BAZEL_BUILD"],
   deps = [
     "@com_github_grpc_grpc//:grpc++",
+    "@com_github_google_glog//:glog",
     "//protos:kvstore_grpc_library",
     ":store",
   ],

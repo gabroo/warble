@@ -10,7 +10,7 @@ using grpc::Status,
       kvstore::RemoveRequest,
       kvstore::RemoveReply;
 
-bool KVStoreClient::put(std::string key, std::string value) const {
+bool KVStoreClient::put(std::string key, std::string value) {
   ClientContext context;
   PutRequest request;
   request.set_key(key);
@@ -25,7 +25,7 @@ bool KVStoreClient::put(std::string key, std::string value) const {
   }
 }
 
-std::optional<std::vector<std::string>> KVStoreClient::get(std::string key) const {
+std::optional<std::vector<std::string>> KVStoreClient::get(std::string key) {
   ClientContext context;
   GetRequest request;
   request.set_key(key);
@@ -45,7 +45,7 @@ std::optional<std::vector<std::string>> KVStoreClient::get(std::string key) cons
   }
 }
 
-bool KVStoreClient::remove(std::string key) const {
+bool KVStoreClient::remove(std::string key) {
   ClientContext context;
   RemoveRequest request;
   request.set_key(key);

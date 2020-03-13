@@ -3,14 +3,19 @@ build --color=yes
 build --cxxopt='-std=c++17'
 build -c dbg # temporary
 
-# build targets
-build:all kvstore:server func:server
+# build config
+build:all kvstore:server func:server warble:warble
+
+# run configs
+run:kvstore kvstore:server
+run:func func:server
+run:warble warble:warble
 
 # test options
 test --test_output=all
 
 # test targets
-test:all tests:kvstore
+test:all tests:kvstore tests:funcs
 
 # clean options
 clean --async

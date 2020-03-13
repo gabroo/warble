@@ -19,7 +19,9 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <ctime>
 #include <grpc++/grpc++.h>
+#include <glog/logging.h>
 #include "protos/warble.pb.h"
 #include "protos/func.grpc.pb.h"
 
@@ -34,13 +36,20 @@ class CLI {
 		"register_user",
 		"warble",
 		"follow",
-		"read"
-	}) {};
-	void start();
-	void register_functions();
-	void register_user(std::string);
+		"read",
+		"profile"
+	}) {
+		RegisterFunctions();
+	};
+	void RegisterFunctions();
+	void RegisterUser(std::string);
+	void Warble(std::string, std::string, std::string);
+	void Follow(std::string, std::string);
+	void Read(std::string);
+	void Profile(std::string);
+
  private:
- 	int find_function(std::string);
+ 	int find_event_type_(std::string);
   std::unique_ptr<FuncService::Stub> func_; // interface to Func
 	std::vector<std::string> functions_;
 };

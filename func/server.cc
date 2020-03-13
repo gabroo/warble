@@ -20,14 +20,24 @@ Status FuncServer::hook(ServerContext* context, const HookRequest* request, Hook
   std::string event_function = request->event_function();
   if (events_.find(event_type) == events_.end()) {
     events_.insert({event_type, event_function});
+    LOG(INFO) << "hooked function " << event_function << " to type " << event_type;
     return Status::OK;
   } else {
+    LOG(INFO) << "function already hooked " << event_function;
     return Status::CANCELLED;
   }
 }
 
 Status FuncServer::unhook(ServerContext* context, const UnhookRequest* request, UnhookReply* reply) {
-  // will worry about this later; not used by warble
+  int event_type = request->event_type();
+  if (events_.find(event_type) == events_.end()) {
+    LOG(INFO) << "event type " << event_type << " not already in use.";
+    return Status::CANCELLED;
+  } else {
+    LOG(INFO) << "erased " << event_type;
+    events_.erase(event_type);
+    return Status::OK;
+  }
   return Status::OK;
 }
 
@@ -37,25 +47,29 @@ Status FuncServer::event(ServerContext* context, const EventRequest* request, Ev
     return Status::CANCELLED;
   } else {
     std::string event_function = events_[event_type];
-    std::cout << "received event\t" << event_function << std::endl;
-    Any rx_payload, tx_payload = request->payload();
+    Any tx_payload = request->payload();
     fn function = funcs[event_function]; // fn defined in functions.h (warble function)
-    bool ok = function(db_, tx_payload, rx_payload);
+    Any rx_payload;
+    bool ok = function(&db_, tx_payload, &rx_payload);
+    *(reply->mutable_payload()) = rx_payload;
     if (ok) {
+      LOG(INFO) << "received event\t" << event_function;
       return Status::OK;
     } else {
+      LOG(INFO) << "could not execute event\t" << event_function;
       return Status::CANCELLED;
     }
   }
 }
 
-int main () {
+int main (int argc, char** argv) {
   using grpc::Server,
         grpc::ServerBuilder,
         grpc::InsecureServerCredentials,
         grpc::InsecureChannelCredentials,
         grpc::CreateChannel;
 
+  google::InitGoogleLogging(argv[0]);
   // Initialize func server and connect to port 50000.
   std::string address("0.0.0.0:50000");
   std::string target("0.0.0.0:50001");

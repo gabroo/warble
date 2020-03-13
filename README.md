@@ -45,7 +45,7 @@ bazel test --config=all
 3. Warble!
 
   ```
-   bazel run --config=warble <args>
+   bazel run --config=warble -- <args>
   ```
 
   `<args>` can be one of the following:
