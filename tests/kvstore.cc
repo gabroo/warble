@@ -1,9 +1,10 @@
 #include <vector>
+
 #include "gtest/gtest.h"
 #include "kvstore/store.h"
 
-using std::vector;
 using std::string;
+using std::vector;
 
 class KVStoreTest : public ::testing::Test {
  protected:
@@ -35,7 +36,7 @@ TEST_F(KVStoreTest, Get) {
   exists = store.get("key3");
   vals = *exists;
   EXPECT_EQ((int)vals.size(), 1);
-  EXPECT_EQ(vals[0], "val3"); 
+  EXPECT_EQ(vals[0], "val3");
   EXPECT_FALSE(exists = store.get("not_a_key"));
 }
 

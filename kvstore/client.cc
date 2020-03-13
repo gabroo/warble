@@ -1,14 +1,8 @@
 #include "client.h"
 
-using grpc::Status,
-      grpc::ClientContext,
-      grpc::ClientReader,
-      kvstore::PutReply,
-      kvstore::PutRequest,
-      kvstore::GetRequest,
-      kvstore::GetReply,
-      kvstore::RemoveRequest,
-      kvstore::RemoveReply;
+using grpc::Status, grpc::ClientContext, grpc::ClientReader, kvstore::PutReply,
+    kvstore::PutRequest, kvstore::GetRequest, kvstore::GetReply,
+    kvstore::RemoveRequest, kvstore::RemoveReply;
 
 bool KVStoreClient::put(std::string key, std::string value) {
   ClientContext context;
