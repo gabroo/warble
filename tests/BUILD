@@ -10,3 +10,5 @@ cc_test(
   ],
   timeout = "short",
 )
+
+exports_files(["gtest.BUILD", "glog.BUILD"])

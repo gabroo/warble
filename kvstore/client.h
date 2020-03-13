@@ -12,9 +12,9 @@ using kvstore::KeyValueStore,
 class KVStoreClient {
  public:
   KVStoreClient(std::shared_ptr<ChannelInterface> channel) : stub_(KeyValueStore::NewStub(channel)) {}
-  bool put(std::string, std::string);
-  std::optional<std::vector<std::string>> get(std::string);
-  bool remove(std::string);
+  bool put(std::string, std::string) const;
+  std::optional<std::vector<std::string>> get(std::string) const;
+  bool remove(std::string) const;
  private:
   std::unique_ptr<KeyValueStore::Stub> stub_;
 };

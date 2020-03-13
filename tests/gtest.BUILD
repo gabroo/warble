@@ -1,3 +1,5 @@
+load("@rules_cc//:cc_defs.bzl", "cc_library")
+
 # make gtest library
 cc_library(
   name = "main",

@@ -15,16 +15,11 @@
 #include "protos/kvstore.grpc.pb.h"
 #include "kvstore/client.h"
 #include "protos/warble.pb.h"
-#include "functions.h"
-
-using warble::RegisterUserRequest,
-      warble::RegisterUserReply,
-      grpc::protobuf::Message;
+#include "warble/functions.h"
 
 using grpc::Status,
       grpc::ServerContext,
       grpc::WriteOptions,
-      grpc::ChannelInterface,
       grpc::CreateChannel,
       grpc::InsecureChannelCredentials,
       func::FuncService,
@@ -34,19 +29,23 @@ using grpc::Status,
       func::UnhookReply,
       func::EventRequest,
       func::EventReply,
+      warble::RegisterUserRequest,
+      warble::RegisterUserReply,
+      google::protobuf::Message,
+      google::protobuf::Any,
       kvstore::KeyValueStore;
 
 
 class FuncServer final : public FuncService::Service {
  public:
-  FuncServer(std::string target) : funcs_(target) {};
-  Status hook(ServerContext*, const HookRequest*, HookReply*);
-  Status unhook(ServerContext*, const UnhookRequest*, UnhookReply*);
-  Status event(ServerContext*, const EventRequest*, EventReply*);
+  FuncServer(std::string target) : db_(CreateChannel(target, InsecureChannelCredentials())) {};
+  Status hook(ServerContext*, const HookRequest*, HookReply*) override;
+  Status unhook(ServerContext*, const UnhookRequest*, UnhookReply*) override;
+  Status event(ServerContext*, const EventRequest*, EventReply*) override;
 
  private:
   std::unordered_map<int, std::string> events_;
-  WarbleFuncManager funcs_;
+  KVStoreClient db_;
 };
 
 #endif // !FUNCSERVER_H

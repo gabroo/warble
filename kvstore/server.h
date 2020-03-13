@@ -29,9 +29,9 @@ using grpc::Status,
 
 class KVStoreServer final : public KeyValueStore::Service {
  public:
-  Status put(ServerContext*, const PutRequest*, PutReply*);
-  Status get(ServerContext*, const GetRequest*, ServerWriter<GetReply>*);
-  Status remove(ServerContext*, const RemoveRequest*, RemoveReply*);
+  Status put(ServerContext*, const PutRequest*, PutReply*) override;
+  Status get(ServerContext*, const GetRequest*, ServerWriter<GetReply>*) override;
+  Status remove(ServerContext*, const RemoveRequest*, RemoveReply*) override;
  private:
   KVStore store_;
 };
