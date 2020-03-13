@@ -28,12 +28,18 @@ using google::protobuf::Message, google::protobuf::Any, grpc::CreateChannel,
     warble::ProfileRequest, warble::ProfileReply, func::EventRequest,
     func::EventReply;
 
+// Registers a username that can be later used to login
 bool RegisterUser(Database* db, Any, Any*);
+// Posts a warble to a given account, returns warble ID
 bool Warble(Database* db, Any, Any*);
+// Creates a follower/following relationship between two users
 bool Follow(Database* db, Any, Any*);
+// Reads an entire thread (recursively) from a root warble
 bool Read(Database* db, Any, Any*);
+// Gets the profile (followers and following) of a user
 bool Profile(Database* db, Any, Any*);
 
+// type definition of an arbitrary function that is executed by func
 typedef std::function<bool(Database*, Any, Any*)> fn;
 static std::unordered_map<std::string, fn> funcs({{"register_user",
                                                    RegisterUser},
@@ -41,5 +47,4 @@ static std::unordered_map<std::string, fn> funcs({{"register_user",
                                                   {"follow", Follow},
                                                   {"read", Read},
                                                   {"profile", Profile}});
-
 #endif  // !FUNCTIONS_H

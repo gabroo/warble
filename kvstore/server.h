@@ -23,11 +23,15 @@ using grpc::Status, grpc::ServerContext, grpc::ServerWriter, grpc::WriteOptions,
     kvstore::GetRequest, kvstore::GetReply, kvstore::RemoveRequest,
     kvstore::RemoveReply;
 
+// Creates and starts a server that exposes a key value store API
 class KVStoreServer final : public KeyValueStore::Service {
  public:
+  // Allows for multiple values associated with each key.
   Status put(ServerContext*, const PutRequest*, PutReply*) override;
+  // Returns all values associated with a key.
   Status get(ServerContext*, const GetRequest*,
              ServerWriter<GetReply>*) override;
+  // Removes all values associated with a key.
   Status remove(ServerContext*, const RemoveRequest*, RemoveReply*) override;
 
  private:

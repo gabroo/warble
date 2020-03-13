@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+// Interface that represents a database with put, get, and remove functionality.
+// Used for KVStoreClient as well as testing (see tests/funcs.cc)
 class Database {
  public:
   virtual bool put(std::string, std::string) = 0;
