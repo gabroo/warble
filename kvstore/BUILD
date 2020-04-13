@@ -26,6 +26,7 @@ cc_binary(
   deps = [
     "@com_github_grpc_grpc//:grpc++",
     "@com_github_google_glog//:glog",
+    "@com_github_gflags_gflags//:gflags",
     "//protos:kvstore_grpc_library",
     ":store",
   ],

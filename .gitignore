@@ -4,3 +4,4 @@ bazel*
 .vscode
 .vagrant
 Vagrantfile
+test.txt

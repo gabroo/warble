@@ -24,7 +24,7 @@ DEFINE_bool(profile, false,
 
 int main(int argc, char** argv) {
   google::InitGoogleLogging(argv[0]);
-  gflags::SetUsageMessage("Please run  <warble -h>  to see usage");
+  gflags::SetUsageMessage("Please run with -h flag to see usage");
   gflags::ParseCommandLineFlags(&argc, &argv, true);
   std::string address("0.0.0.0:50000");
   CLI cli(CreateChannel(address, InsecureChannelCredentials()));
