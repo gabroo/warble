@@ -52,13 +52,43 @@ Status KVStoreServer::remove(ServerContext* context,
   return Status::OK;
 }
 
+void KVStoreServer::dump(const std::string &file) {
+  std::cout << "dumping contents of the store to\t" << file << std::endl;
+  store_.dump(file);
+}
+
+void KVStoreServer::read(const std::string &file) {
+  std::cout << "reading contents of the store from\t" << file << std::endl;
+  store_.read(file);
+}
+
+DEFINE_string(file, "", "File from/to which to read/write the contents of the store.");
+
+// must be global to support access from signalHandler
+KVStoreServer server;
+
+void signalHandler(int i) {
+  std::cout << "caught signal\t" << i << std::endl;
+  server.dump(FLAGS_file);
+  exit(i);
+}
+
 int main(int argc, char** argv) {
   using grpc::Server, grpc::ServerBuilder, grpc::InsecureServerCredentials;
 
   google::InitGoogleLogging(argv[0]);
+  gflags::SetUsageMessage("Please run  with -h flag to see usage");
+  gflags::ParseCommandLineFlags(&argc, &argv, true);
+  
+  // link termination/interrupt signals to the handler function
+  if (FLAGS_file != "") {
+    signal(SIGTERM, signalHandler);
+    signal(SIGINT, signalHandler);
+    server.read(FLAGS_file);
+  }
+
   // Initializes a key value store service and connects it to port 50001.
   std::string address("0.0.0.0:50001");
-  KVStoreServer server;
   ServerBuilder builder;
   builder.AddListeningPort(address, InsecureServerCredentials());
   builder.RegisterService(&server);

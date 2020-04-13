@@ -46,3 +46,43 @@ bool KVStore::remove(const std::string &key) {
     return true;
   }
 }
+
+void KVStore::read(const std::string &file) {
+  std::cout << "reading" << std::endl;
+  std::ifstream fs(file);
+  if (fs.is_open()) {
+    std::string key;
+    while (std::getline(fs, key)) {
+      std::cout << key << std::endl;
+      size_t s;
+      fs >> s;
+      std::vector<std::string> vals;
+      std::string val;
+      while (s) {
+        std::getline(fs, val);
+        vals.push_back(val);
+        s--;
+      }
+      map_[key] = vals;
+    }
+  } else {
+    std::cout << "can't open file" << std::endl;
+  }
+}
+
+void KVStore::dump(const std::string &file) {
+  std::cout << "dumping" << std::endl;
+  std::ofstream fs;
+  fs.open(file);
+  std::unordered_map<std::string, std::vector<std::string>>::iterator itr;
+  for (itr = map_.begin(); itr != map_.end(); ++itr) {
+    std::string key = itr->first;
+    std::vector<std::string> vals = itr->second;
+    fs << key << std::endl;
+    fs << vals.size() << std::endl;
+    for (std::string s : vals) {
+      fs << s << std::endl;
+    }
+  }
+  fs.close();
+}
