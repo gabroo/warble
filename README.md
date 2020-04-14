@@ -5,7 +5,9 @@
 ## Setup
 
 1. Setup a [Vagrant](https://app.vagrantup.com) VM with the [`ubuntu/bionic64`](https://app.vagrantup.com/ubuntu/boxes/bionic64) box.
+
 2. Install [`bazel`](https://bazel.build).
+
 3. Clone this repository:
 
   ```
@@ -33,8 +35,9 @@ bazel test --config=all
 1. Start the key value store:
 
   ```
-  bazel run --config=kvstore
+  ./bazel-bin/kvstore/server [--store <file>]
   ```
+(Note: the store is run without bazel because otherwise the paths for the persistence feature become overly complicated.)
 
 2. Start the FaaS server:
 
@@ -45,15 +48,17 @@ bazel test --config=all
 3. Warble!
 
   ```
-   bazel run --config=warble -- <args>
+   bazel run --config=warble -- [flags]
   ```
-
-  `<args>` can be one of the following:
+  
+You must include one of the following flags, but not both:
 
   `--registeruser <username>` - registers the given username
-
+  
   `--user <username>` - logs in as the given username
 
+If the `--user` flag is specified, you must include one of the following actions:
+  
   `--warble <warble text>` - creates a new warble with the given text
 
   `--reply <reply warble id>` - indicates that the new warble is a reply to the given id
