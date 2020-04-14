@@ -27,6 +27,16 @@ message RemoveReply {
   // Empty because success/failure is signaled via GRPC status.
 }
 
+// the following structures are used exclusively for serializing to/parsing from database files
+message Pair {
+  bytes key = 1;
+  repeated bytes values = 2;
+}
+
+message Store {
+  repeated Pair pairs = 1;
+}
+
 service KeyValueStore {
   rpc put (PutRequest) returns (PutReply) {}
   rpc get (GetRequest) returns (stream GetReply) {}

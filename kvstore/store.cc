@@ -48,41 +48,41 @@ bool KVStore::remove(const std::string &key) {
 }
 
 void KVStore::read(const std::string &file) {
-  std::cout << "reading" << std::endl;
+  LOG(INFO) << "reading store contents from\t" << file;
   std::ifstream fs(file);
   if (fs.is_open()) {
-    std::string key;
-    while (std::getline(fs, key)) {
-      std::cout << key << std::endl;
-      size_t s;
-      fs >> s;
-      std::vector<std::string> vals;
-      std::string val;
-      while (s) {
-        std::getline(fs, val);
-        vals.push_back(val);
-        s--;
+    kvstore::Store store;
+    if (store.ParseFromIstream(&fs)) {
+      std::string key;
+      for (kvstore::Pair p : store.pairs()) {
+        std::vector<std::string> values;
+        key = p.key();
+        for (std::string v : p.values()) values.push_back(v);
+        map_[key] = values;
       }
-      map_[key] = vals;
+    } else {
+      LOG(ERROR) << "file exists, but can't parse contents";
     }
   } else {
-    std::cout << "can't open file" << std::endl;
+    LOG(INFO) << "file not found, starting with clean kvstore";
   }
 }
 
 void KVStore::dump(const std::string &file) {
-  std::cout << "dumping" << std::endl;
-  std::ofstream fs;
-  fs.open(file);
+  LOG(INFO) << "dumping to\t" << file;
+  kvstore::Store store;
+  // populate store structure
   std::unordered_map<std::string, std::vector<std::string>>::iterator itr;
   for (itr = map_.begin(); itr != map_.end(); ++itr) {
     std::string key = itr->first;
     std::vector<std::string> vals = itr->second;
-    fs << key << std::endl;
-    fs << vals.size() << std::endl;
-    for (std::string s : vals) {
-      fs << s << std::endl;
-    }
+    kvstore::Pair kvpair;
+    kvpair.set_key(key);
+    for (std::string s : vals) *(kvpair.add_values()) = s;
+    *(store.add_pairs()) = kvpair;
   }
+  // write store to file
+  std::ofstream fs(file, std::ofstream::trunc);
+  store.SerializeToOstream(&fs);
   fs.close();
 }

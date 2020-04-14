@@ -15,6 +15,9 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
+#include <glog/logging.h>
+
+#include "protos/kvstore.pb.h"
 
 // Backend data structure for storing values in memory, using std::unordered_map.
 class KVStore {

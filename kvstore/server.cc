@@ -53,12 +53,10 @@ Status KVStoreServer::remove(ServerContext* context,
 }
 
 void KVStoreServer::dump(const std::string &file) {
-  std::cout << "dumping contents of the store to\t" << file << std::endl;
   store_.dump(file);
 }
 
 void KVStoreServer::read(const std::string &file) {
-  std::cout << "reading contents of the store from\t" << file << std::endl;
   store_.read(file);
 }
 
