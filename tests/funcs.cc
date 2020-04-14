@@ -37,7 +37,7 @@ TEST_F(FuncsTest, RegisterUser) {
   EXPECT_FALSE(RegisterUser(&db, req, &rep));
 }
 
-TEST_F(FuncsTest, Warble) {
+TEST_F(FuncsTest, WarbleNormal) {
   Any req, rep;
   WarbleRequest w_req;
   w_req.set_username("gabroo");
@@ -47,6 +47,39 @@ TEST_F(FuncsTest, Warble) {
   w_req.set_username("not_a_user_that_exists");
   req.PackFrom(w_req);
   EXPECT_FALSE(Follow(&db, req, &rep));
+}
+
+TEST_F(FuncsTest, WarbleValidReply) {
+  Any req, rep;
+  WarbleRequest w_req;
+  w_req.set_username("gabroo");
+  w_req.set_text("parent warble");
+  req.PackFrom(w_req);
+  EXPECT_TRUE(Warble(&db, req, &rep));
+  WarbleReply w_rep;
+  rep.UnpackTo(&w_rep);
+  auto id = w_rep.warble().id();
+  w_req.set_username("gabroo");
+  w_req.set_text("reply warble");
+  w_req.set_parent_id(id);
+  req.PackFrom(w_req);
+  EXPECT_TRUE(Warble(&db, req, &rep));
+}
+
+TEST_F(FuncsTest, WarbleInvalidReply) {
+  Any req, rep;
+  WarbleRequest w_req;
+  w_req.set_username("gabroo");
+  w_req.set_text("parent warble");
+  req.PackFrom(w_req);
+  EXPECT_TRUE(Warble(&db, req, &rep));
+  WarbleReply w_rep;
+  rep.UnpackTo(&w_rep);
+  w_req.set_username("gabroo");
+  w_req.set_text("reply warble");
+  w_req.set_parent_id("not_a_valid_id");
+  req.PackFrom(w_req);
+  EXPECT_FALSE(Warble(&db, req, &rep));
 }
 
 TEST_F(FuncsTest, Follow) {
