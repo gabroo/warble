@@ -1,7 +1,6 @@
 # build options
 build --color=yes
 build --cxxopt='-std=c++17'
-build -c dbg # temporary
 
 # build config
 build:all kvstore:server func:server warble:warble
