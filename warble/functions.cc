@@ -21,6 +21,7 @@ bool Warble(Database* db, Any req, Any* rep) {
   req.UnpackTo(&request);
   std::string username = request.username(), text = request.text(),
               parent_id = request.parent_id(), key = "_warbles_" + username;
+  // check if user is registered
   auto exists = db->get("_users_");
   if (exists) {
     if (std::find((*exists).begin(), (*exists).end(), username) ==
@@ -29,6 +30,15 @@ bool Warble(Database* db, Any req, Any* rep) {
   } else {
     return false;
   }
+  // check if reply is valid
+  if (!parent_id.empty()) {
+    auto exists = db->get("_warble_"+parent_id);
+    if (!exists) {
+      LOG(INFO) << "Tried to reply to a warble that does not exist.";
+      return false;
+    }
+  }
+  // generate warble id
   std::string warble_id;
   exists = db->get(key);
   if (exists) {
