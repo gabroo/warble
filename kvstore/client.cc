@@ -14,7 +14,7 @@ bool KVStoreClient::put(std::string key, std::string value) {
   if (s.ok()) {
     return true;
   } else {
-    LOG(ERROR) << s.error_code() << "\t" << s.error_message();
+    LOG(INFO) << s.error_code() << "\t" << s.error_message();
     return false;
   }
 }
@@ -34,7 +34,7 @@ std::optional<std::vector<std::string>> KVStoreClient::get(std::string key) {
   if (s.ok()) {
     return values;
   } else {
-    LOG(ERROR) << s.error_code() << "\t" << s.error_message();
+    LOG(INFO) << s.error_code() << "\t" << s.error_message();
     return std::nullopt;
   }
 }
@@ -48,7 +48,7 @@ bool KVStoreClient::remove(std::string key) {
   if (s.ok()) {
     return true;
   } else {
-    LOG(ERROR) << s.error_code() << "\t" << s.error_message();
+    LOG(INFO) << s.error_code() << "\t" << s.error_message();
     return false;
   }
 }
