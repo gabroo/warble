@@ -7,10 +7,6 @@
     `put(key, value)` associates `value` with `key` in the store
     `get(key)` returns stream of values associated with `key`
     `remove(key)` removes all values associated with `key`
-
-  TODO
-    - make thread safe
-    - modify keys to include namespaces (ie, bitstrings)
 */
 
 #include "store.h"

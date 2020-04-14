@@ -1,3 +1,5 @@
+#include <glog/logging.h>
+
 #include "gtest/gtest.h"
 #include "kvstore/db.h"
 #include "kvstore/store.h"
@@ -19,7 +21,6 @@ class FuncsTest : public ::testing::Test {
  protected:
   FakeDB db;
   void SetUp() override {
-    db = FakeDB();
     db.put("_users_", "gabroo");
     db.put("_users_", "gabru");
     db.put("_users_", "gabbru");
@@ -109,6 +110,7 @@ TEST_F(FuncsTest, Profile) {
 }
 
 int main(int argc, char** argv) {
+  google::InitGoogleLogging(argv[0]);
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }
