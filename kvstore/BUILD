@@ -6,6 +6,11 @@ cc_library(
   name = "store",
   srcs = ["store.cc"],
   hdrs = ["store.h"],
+  includes = ["BAZEL_BUILD"],
+  deps = [
+    "@com_github_google_glog//:glog",
+    "//protos:kvstore_grpc_library",
+  ],
 )
 
 cc_library(
