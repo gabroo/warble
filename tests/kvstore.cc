@@ -1,4 +1,6 @@
 #include <vector>
+#include <thread>
+
 #include <glog/logging.h>
 
 #include "gtest/gtest.h"
@@ -14,6 +16,24 @@ class KVStoreTest : public ::testing::Test {
     store.put("key3", "val3");
   }
 };
+
+TEST_F(KVStoreTest, ConcurrencyTests) {
+  store.put("count", "0");
+  auto increment = [this]() {
+    int cur = std::stoi((*store.get("count"))[0]);
+    store.remove("count");
+    store.put("count", std::to_string(cur+1));
+  };
+  std::vector<std::thread> q;
+  for (int i = 0; i < 100; ++i) {
+    q.push_back(std::thread(increment));
+  }
+  std::for_each(q.begin(), q.end(), [](std::thread &t) {
+    t.join();
+  });
+  std::string result = (*store.get("count"))[0];
+  EXPECT_EQ(stoi(result), 100);
+}
 
 TEST_F(KVStoreTest, Dump) {
   std::FILE* f = std::fopen("test.txt", "r");
