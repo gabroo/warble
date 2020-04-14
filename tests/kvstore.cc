@@ -1,22 +1,42 @@
 #include <vector>
+#include <glog/logging.h>
 
 #include "gtest/gtest.h"
 #include "kvstore/store.h"
-
-using std::string;
-using std::vector;
 
 class KVStoreTest : public ::testing::Test {
  protected:
   KVStore store;
   void SetUp() override {
-    store = KVStore();
     store.put("key1", "val11");
     store.put("key1", "val12");
     store.put("key2", "val2");
     store.put("key3", "val3");
   }
 };
+
+TEST_F(KVStoreTest, Dump) {
+  std::FILE* f = std::fopen("test.txt", "r");
+  if (f != nullptr) std::remove("test.txt");
+  store.dump("test.txt");
+  f = std::fopen("test.txt", "r");
+  EXPECT_TRUE(f != nullptr);
+}
+
+TEST_F(KVStoreTest, DumpAndRead) {
+  store.dump("test.txt");
+  KVStore newstore;
+  newstore.read("test.txt");
+  auto exists = newstore.get("key1");
+  std::vector<std::string> vals = *exists;
+  EXPECT_EQ((int)vals.size(), 2);
+  EXPECT_EQ(vals[0], "val11");
+  EXPECT_EQ(vals[1], "val12");
+  exists = newstore.get("key2");
+  vals = *exists;
+  EXPECT_EQ((int)vals.size(), 1);
+  EXPECT_EQ(vals[0], "val2");
+}
 
 TEST_F(KVStoreTest, Put) {
   EXPECT_TRUE(store.put("key3", "val31"));
@@ -52,6 +72,7 @@ TEST_F(KVStoreTest, Remove) {
 }
 
 int main(int argc, char** argv) {
+  google::InitGoogleLogging(argv[0]);
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }
