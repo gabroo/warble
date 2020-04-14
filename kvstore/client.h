@@ -2,6 +2,7 @@
 #define KVCLIENT_H
 
 #include <optional>
+#include <glog/logging.h>
 #include <thread>
 #include <vector>
 
