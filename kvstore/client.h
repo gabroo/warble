@@ -1,6 +1,8 @@
 #ifndef KVCLIENT_H
 #define KVCLIENT_H
 
+#include <glog/logging.h>
+
 #include <optional>
 #include <thread>
 #include <vector>

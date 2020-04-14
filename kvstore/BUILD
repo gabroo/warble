@@ -21,6 +21,7 @@ cc_library(
   includes = ["BAZEL_BUILD"],
   deps = [
     "@com_github_grpc_grpc//:grpc++",
+    "@com_github_google_glog//:glog",
     "//protos:kvstore_grpc_library",
   ]
 )
