@@ -47,13 +47,15 @@ bool KVStore::remove(const std::string &key) {
 }
 
 void KVStore::read(const std::string &file) {
-  std::unique_lock<std::shared_mutex> lck(mu_);
   LOG(INFO) << "reading store contents from\t" << file;
   std::ifstream fs(file);
   if (fs.is_open()) {
+    // parse file into protobuf object
     kvstore::Store store;
     if (store.ParseFromIstream(&fs)) {
+      std::unique_lock<std::shared_mutex> lck(mu_);
       std::string key;
+      // populate map
       for (kvstore::Pair p : store.pairs()) {
         std::vector<std::string> values;
         key = p.key();
@@ -70,7 +72,6 @@ void KVStore::read(const std::string &file) {
 
 void KVStore::dump(const std::string &file) {
   std::shared_lock<std::shared_mutex> lck(mu_);
-  LOG(INFO) << "dumping to\t" << file;
   kvstore::Store store;
   // populate store structure
   std::unordered_map<std::string, std::vector<std::string>>::iterator itr;
@@ -83,6 +84,7 @@ void KVStore::dump(const std::string &file) {
     *(store.add_pairs()) = kvpair;
   }
   // write store to file
+  LOG(INFO) << "dumping store contents to\t" << file;
   std::ofstream fs(file, std::ofstream::trunc);
   store.SerializeToOstream(&fs);
   fs.close();
