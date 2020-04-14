@@ -60,14 +60,14 @@ void KVStoreServer::read(const std::string &file) {
   store_.read(file);
 }
 
-DEFINE_string(file, "", "File from/to which to read/write the contents of the store.");
+DEFINE_string(store, "", "File from/to which to read/write the contents of the store.");
 
 // must be global to support access from signalHandler
 KVStoreServer server;
 
 void signalHandler(int i) {
   std::cout << "caught signal\t" << i << std::endl;
-  server.dump(FLAGS_file);
+  server.dump(FLAGS_store);
   exit(i);
 }
 
@@ -79,10 +79,10 @@ int main(int argc, char** argv) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
   
   // link termination/interrupt signals to the handler function
-  if (FLAGS_file != "") {
+  if (FLAGS_store != "") {
     signal(SIGTERM, signalHandler);
     signal(SIGINT, signalHandler);
-    server.read(FLAGS_file);
+    server.read(FLAGS_store);
   }
 
   // Initializes a key value store service and connects it to port 50001.
