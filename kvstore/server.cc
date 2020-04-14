@@ -52,21 +52,17 @@ Status KVStoreServer::remove(ServerContext* context,
   return Status::OK;
 }
 
-void KVStoreServer::dump(const std::string &file) {
-  store_.dump(file);
-}
+void KVStoreServer::dump(const std::string& file) { store_.dump(file); }
 
-void KVStoreServer::read(const std::string &file) {
-  store_.read(file);
-}
+void KVStoreServer::read(const std::string& file) { store_.read(file); }
 
-DEFINE_string(store, "", "File from/to which to read/write the contents of the store.");
+DEFINE_string(store, "",
+              "File from/to which to read/write the contents of the store.");
 
 // must be global to support access from signalHandler
 KVStoreServer server;
 
 void signalHandler(int i) {
-  std::cout << "caught signal\t" << i << std::endl;
   server.dump(FLAGS_store);
   exit(i);
 }
@@ -77,7 +73,7 @@ int main(int argc, char** argv) {
   google::InitGoogleLogging(argv[0]);
   gflags::SetUsageMessage("Please run  with -h flag to see usage");
   gflags::ParseCommandLineFlags(&argc, &argv, true);
-  
+
   // link termination/interrupt signals to the handler function
   if (FLAGS_store != "") {
     signal(SIGTERM, signalHandler);

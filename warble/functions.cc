@@ -32,7 +32,7 @@ bool Warble(Database* db, Any req, Any* rep) {
   }
   // check if reply is valid
   if (!parent_id.empty()) {
-    auto exists = db->get("_warble_"+parent_id);
+    auto exists = db->get("_warble_" + parent_id);
     if (!exists) {
       LOG(INFO) << "Tried to reply to a warble that does not exist.";
       return false;

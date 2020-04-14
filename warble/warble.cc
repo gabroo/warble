@@ -30,10 +30,13 @@ int main(int argc, char** argv) {
   CLI cli(CreateChannel(address, InsecureChannelCredentials()));
   if (FLAGS_registeruser == "" && FLAGS_user == "") {
     std::cout << "Must specify either --registeruser (to sign up) or --user "
-                 "(to log in)." << std::endl;
+                 "(to log in)."
+              << std::endl;
     return 1;
   } else if (FLAGS_registeruser != "" && FLAGS_user != "") {
-    std::cout << "Cannot both login and register at the same time. Please use one of the flags." << std::endl;
+    std::cout << "Cannot both login and register at the same time. Please use "
+                 "one of the flags."
+              << std::endl;
   } else {
     if (FLAGS_registeruser != "") {
       cli.RegisterUser(FLAGS_registeruser);
@@ -56,7 +59,8 @@ int main(int argc, char** argv) {
           cli.Follow(FLAGS_user, FLAGS_follow);
         } else {
           std::cout << "Must specify at least one of {--warble, --read, "
-                       "--profile, --follow}." << std::endl;
+                       "--profile, --follow}."
+                    << std::endl;
           return 3;
         }
       }
