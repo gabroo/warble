@@ -12,6 +12,7 @@
 #include "store.h"
 
 bool KVStore::put(const std::string &key, const std::string &value) {
+  std::unique_lock<std::shared_mutex> lck(mu_);
   if (map_.find(key) == map_.end()) {
     map_[key].push_back(value);
   } else {
@@ -27,6 +28,7 @@ bool KVStore::put(const std::string &key, const std::string &value) {
 }
 
 std::optional<std::vector<std::string>> KVStore::get(const std::string &key) {
+  std::shared_lock<std::shared_mutex> lck(mu_);
   if (map_.find(key) != map_.end()) {
     return map_[key];
   } else {
@@ -35,6 +37,7 @@ std::optional<std::vector<std::string>> KVStore::get(const std::string &key) {
 }
 
 bool KVStore::remove(const std::string &key) {
+  std::unique_lock<std::shared_mutex> lck(mu_);
   if (map_.find(key) == map_.end()) {
     return false;  // could not find key in map
   } else {
@@ -44,6 +47,7 @@ bool KVStore::remove(const std::string &key) {
 }
 
 void KVStore::read(const std::string &file) {
+  std::unique_lock<std::shared_mutex> lck(mu_);
   LOG(INFO) << "reading store contents from\t" << file;
   std::ifstream fs(file);
   if (fs.is_open()) {
@@ -65,6 +69,7 @@ void KVStore::read(const std::string &file) {
 }
 
 void KVStore::dump(const std::string &file) {
+  std::shared_lock<std::shared_mutex> lck(mu_);
   LOG(INFO) << "dumping to\t" << file;
   kvstore::Store store;
   // populate store structure

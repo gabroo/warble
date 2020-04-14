@@ -16,6 +16,8 @@
 #include <iostream>
 #include <fstream>
 #include <glog/logging.h>
+#include <mutex>
+#include <shared_mutex>
 
 #include "protos/kvstore.pb.h"
 
@@ -32,6 +34,7 @@ class KVStore {
   void read(const std::string&);
  private:
   std::unordered_map<std::string, std::vector<std::string>> map_;
+  std::shared_mutex mu_;
 };
 
 #endif  // !KVSTORE_H
