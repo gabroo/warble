@@ -9,19 +9,21 @@
 #ifndef KVSTORE_H
 #define KVSTORE_H
 
+#include <glog/logging.h>
+
 #include <algorithm>
+#include <fstream>
+#include <iostream>
+#include <mutex>
 #include <optional>
+#include <shared_mutex>
 #include <unordered_map>
 #include <vector>
-#include <iostream>
-#include <fstream>
-#include <glog/logging.h>
-#include <mutex>
-#include <shared_mutex>
 
 #include "protos/kvstore.pb.h"
 
-// Backend data structure for storing values in memory, using std::unordered_map.
+// Backend data structure for storing values in memory, using
+// std::unordered_map.
 class KVStore {
  public:
   bool put(const std::string&, const std::string&);
@@ -32,6 +34,7 @@ class KVStore {
   void dump(const std::string&);
   // Reads the contents of the file to the kvstore
   void read(const std::string&);
+
  private:
   std::unordered_map<std::string, std::vector<std::string>> map_;
   std::shared_mutex mu_;

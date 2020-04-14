@@ -27,8 +27,9 @@ using grpc::Status, grpc::ServerContext, grpc::WriteOptions,
     kvstore::KeyValueStore;
 
 /*
-  Creates and runs a server that manages hooking, unhooking, and executions of arbitrary functions.
-  Functions are to be defined elsewhere and included in this file (eg, #include "warble/functions.h").
+  Creates and runs a server that manages hooking, unhooking, and executions of
+  arbitrary functions. Functions are to be defined elsewhere and included in
+  this file (eg, #include "warble/functions.h").
 */
 class FuncServer final : public FuncService::Service {
  public:

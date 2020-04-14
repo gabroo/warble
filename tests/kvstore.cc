@@ -1,7 +1,7 @@
-#include <vector>
-#include <thread>
-
 #include <glog/logging.h>
+
+#include <thread>
+#include <vector>
 
 #include "gtest/gtest.h"
 #include "kvstore/store.h"
@@ -22,15 +22,13 @@ TEST_F(KVStoreTest, ConcurrencyTests) {
   auto increment = [this]() {
     int cur = std::stoi((*store.get("count"))[0]);
     store.remove("count");
-    store.put("count", std::to_string(cur+1));
+    store.put("count", std::to_string(cur + 1));
   };
   std::vector<std::thread> q;
   for (int i = 0; i < 100; ++i) {
     q.push_back(std::thread(increment));
   }
-  std::for_each(q.begin(), q.end(), [](std::thread &t) {
-    t.join();
-  });
+  std::for_each(q.begin(), q.end(), [](std::thread& t) { t.join(); });
   std::string result = (*store.get("count"))[0];
   EXPECT_EQ(stoi(result), 100);
 }
