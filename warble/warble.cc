@@ -21,8 +21,9 @@ DEFINE_string(follow, "", "Starts following the given username");
 DEFINE_string(read, "", "Reads the warble thread starting at the given id");
 DEFINE_bool(profile, false,
             "Gets the user's profile of following and followers");
+DEFINE_string(stream, "", "Streams the warbles with the given hashtag");
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
   google::InitGoogleLogging(argv[0]);
   gflags::SetUsageMessage("Please run with -h flag to see usage");
   gflags::ParseCommandLineFlags(&argc, &argv, true);
@@ -49,17 +50,20 @@ int main(int argc, char** argv) {
             FLAGS_follow == "") {
           cli.Warble(FLAGS_user, FLAGS_warble, FLAGS_reply);
         } else if (FLAGS_warble == "" && FLAGS_read != "" && !FLAGS_profile &&
-                   FLAGS_follow == "") {
+                   FLAGS_follow == "" && FLAGS_stream == "") {
           cli.Read(FLAGS_read);
         } else if (FLAGS_warble == "" && FLAGS_read == "" && FLAGS_profile &&
-                   FLAGS_follow == "") {
+                   FLAGS_follow == "" && FLAGS_stream == "") {
           cli.Profile(FLAGS_user);
         } else if (FLAGS_warble == "" && FLAGS_read == "" && !FLAGS_profile &&
-                   FLAGS_follow != "") {
+                   FLAGS_follow != "" && FLAGS_stream == "") {
           cli.Follow(FLAGS_user, FLAGS_follow);
+        } else if (FLAGS_warble == "" && FLAGS_read == "" && !FLAGS_profile &&
+                   FLAGS_follow == "" && FLAGS_stream != "") {
+          cli.Stream(FLAGS_stream);
         } else {
           std::cout << "Must specify at least one of {--warble, --read, "
-                       "--profile, --follow}."
+                       "--profile, --follow, --stream}."
                     << std::endl;
           return 3;
         }

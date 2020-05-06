@@ -13,7 +13,8 @@ using grpc::ClientContext, grpc::Status, google::protobuf::Any,
     warble::RegisterUserRequest, warble::RegisterUserReply,
     warble::WarbleRequest, warble::WarbleReply, warble::FollowRequest,
     warble::FollowReply, warble::ReadRequest, warble::ReadReply,
-    warble::ProfileRequest, warble::ProfileReply;
+    warble::ProfileRequest, warble::ProfileReply, warble::StreamRequest,
+    warble::StreamReply;
 
 void CLI::RegisterFunctions() {
   for (size_t i = 0; i < functions_.size(); ++i) {
@@ -144,7 +145,8 @@ void CLI::Read(std::string id) {
       std::cout << "(id " << id << ")\n";
       std::cout << asctime(gmtime(&t));
       std::cout << "[" << user << "]:\t" << text << "\n";
-      if (parent.size()) std::cout << "(reply to: " + parent + ")\n";
+      if (parent.size())
+        std::cout << "(reply to: " + parent + ")\n";
       std::cout << std::endl;
     }
   } else {
@@ -203,5 +205,50 @@ void CLI::Profile(std::string username) {
   } else {
     std::cout << "Could not find profile for user " << username << std::endl;
     LOG(INFO) << "error: " << s.error_message();
+  }
+}
+
+void CLI::Stream(std::string hashtag) {
+  ClientContext init_context;
+  StreamRequest s_req;
+  s_req.set_hashtag(hashtag);
+  EventRequest req;
+  int event_type = find_event_type_("stream");
+  req.set_event_type(event_type);
+  Any rx_payload, tx_payload;
+  tx_payload.PackFrom(s_req);
+  *(req.mutable_payload()) = tx_payload;
+  EventReply rep;
+  size_t num_warbles = 0;
+  Status s = func_->event(&init_context, req, &rep);
+  if ((s.ok())) {
+    rx_payload = rep.payload();
+    StreamReply s_rep;
+    rx_payload.UnpackTo(&s_rep);
+    num_warbles = s_rep.warbles_size();
+  } else {
+    num_warbles = 0;
+  }
+  while (1) {
+    ClientContext context;
+    s = func_->event(&context, req, &rep);
+    if (s.ok()) {
+      rx_payload = rep.payload();
+      StreamReply s_rep;
+      rx_payload.UnpackTo(&s_rep);
+      for (size_t i = num_warbles; i < (size_t)s_rep.warbles_size(); i++) {
+        warble::Warble w = s_rep.warbles(i);
+        std::string user = w.username(), text = w.text(), id = w.id(),
+                    parent = w.parent_id();
+        time_t t = w.timestamp().seconds();
+        std::cout << "(id " << id << ")\n";
+        std::cout << asctime(gmtime(&t));
+        std::cout << "[" << user << "]:\t" << text << "\n";
+        if (parent.size())
+          std::cout << "(reply to: " + parent + ")\n";
+        std::cout << std::endl;
+      }
+      num_warbles = s_rep.warbles_size();
+    }
   }
 }

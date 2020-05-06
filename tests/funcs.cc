@@ -1,24 +1,24 @@
 #include <glog/logging.h>
 
-#include "gtest/gtest.h"
 #include "kvstore/db.h"
 #include "kvstore/store.h"
 #include "warble/functions.h"
+#include "gtest/gtest.h"
 
 class FakeDB : public Database {
- public:
+public:
   bool put(std::string key, std::string val) { return store_.put(key, val); }
   std::optional<std::vector<std::string>> get(std::string key) {
     return store_.get(key);
   }
   bool remove(std::string key) { return store_.remove(key); }
 
- private:
+private:
   KVStore store_;
 };
 
 class FuncsTest : public ::testing::Test {
- protected:
+protected:
   FakeDB db;
   void SetUp() override {
     db.put("_users_", "gabroo");
@@ -142,7 +142,28 @@ TEST_F(FuncsTest, Profile) {
   EXPECT_EQ(p_rep.followers_size(), 1);
 }
 
-int main(int argc, char** argv) {
+TEST_F(FuncsTest, Stream) {
+  Any req, rep;
+  WarbleRequest w_req;
+  w_req.set_username("gabroo");
+  w_req.set_text("hello world #hello");
+  req.PackFrom(w_req);
+  EXPECT_TRUE(Warble(&db, req, &rep));
+  w_req.set_username("gabroo");
+  w_req.set_text("hello world #hello");
+  w_req.set_parent_id("gabroo0");
+  req.PackFrom(w_req);
+  EXPECT_TRUE(Warble(&db, req, &rep));
+  StreamRequest s_req;
+  s_req.set_hashtag("#hello");
+  req.PackFrom(s_req);
+  EXPECT_TRUE(Stream(&db, req, &rep));
+  StreamReply s_rep;
+  rep.UnpackTo(&s_rep);
+  EXPECT_EQ(s_rep.warbles_size(), 2);
+}
+
+int main(int argc, char **argv) {
   google::InitGoogleLogging(argv[0]);
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

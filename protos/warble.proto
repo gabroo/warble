@@ -59,3 +59,11 @@ message ProfileReply {
   repeated string followers = 1;
   repeated string following = 2;
 }
+
+message StreamRequest {
+  bytes hashtag = 1; // The hashtag of the warbles to read.
+}
+
+message StreamReply {
+  repeated Warble warbles = 1; // The warbles with the desired hashtag.
+}

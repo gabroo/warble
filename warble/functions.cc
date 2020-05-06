@@ -1,6 +1,6 @@
 #include "functions.h"
 
-bool RegisterUser(Database* db, Any req, Any* rep) {
+bool RegisterUser(Database *db, Any req, Any *rep) {
   RegisterUserRequest request;
   req.UnpackTo(&request);
   std::string username = request.username();
@@ -16,11 +16,12 @@ bool RegisterUser(Database* db, Any req, Any* rep) {
   return true;
 }
 
-bool Warble(Database* db, Any req, Any* rep) {
+bool Warble(Database *db, Any req, Any *rep) {
   WarbleRequest request;
   req.UnpackTo(&request);
   std::string username = request.username(), text = request.text(),
               parent_id = request.parent_id(), key = "_warbles_" + username;
+  std::vector<std::string> hashtags;
   // check if user is registered
   auto exists = db->get("_users_");
   if (exists) {
@@ -69,10 +70,17 @@ bool Warble(Database* db, Any req, Any* rep) {
   } else {
     LOG(INFO) << "no parent id found " << parent_id;
   }
+  std::istringstream iss(text);
+  std::vector<std::string> result{std::istream_iterator<std::string>(iss), {}};
+  for (auto r : result) {
+    if (r[0] == '#') {
+      db->put("_hashtag_" + r, w_as_string);
+    }
+  }
   return true;
 }
 
-bool Follow(Database* db, Any req, Any* rep) {
+bool Follow(Database *db, Any req, Any *rep) {
   FollowRequest request;
   req.UnpackTo(&request);
   std::string username = request.username(), to_follow = request.to_follow();
@@ -101,14 +109,14 @@ bool Follow(Database* db, Any req, Any* rep) {
   }
 }
 
-bool Read(Database* db, Any req, Any* rep) {
+bool Read(Database *db, Any req, Any *rep) {
   ReadRequest request;
   ReadReply reply;
   req.UnpackTo(&request);
   std::string id = request.warble_id();
   std::optional<std::vector<std::string>> exists = db->get("_warble_" + id);
   if (exists) {
-    warble::Warble* og = reply.add_warbles();
+    warble::Warble *og = reply.add_warbles();
     og->ParseFromString((*exists)[0]);
     std::stack<std::string> s({id});
     while (!s.empty()) {
@@ -120,7 +128,7 @@ bool Read(Database* db, Any req, Any* rep) {
         for (std::string r : *replies) {
           exists = db->get("_warble_" + r);
           if (exists) {
-            warble::Warble* w = reply.add_warbles();
+            warble::Warble *w = reply.add_warbles();
             w->ParseFromString((*exists)[0]);
             s.push(r);
           }
@@ -136,7 +144,7 @@ bool Read(Database* db, Any req, Any* rep) {
   }
 }
 
-bool Profile(Database* db, Any req, Any* rep) {
+bool Profile(Database *db, Any req, Any *rep) {
   ProfileRequest request;
   ProfileReply reply;
   req.UnpackTo(&request);
@@ -156,7 +164,7 @@ bool Profile(Database* db, Any req, Any* rep) {
       db->get("_followers_" + username);
   if (followers) {
     for (std::string f : *followers) {
-      std::string* s = reply.add_followers();
+      std::string *s = reply.add_followers();
       *s = f;
     }
   }
@@ -164,11 +172,32 @@ bool Profile(Database* db, Any req, Any* rep) {
       db->get("_following_" + username);
   if (following) {
     for (std::string f : *following) {
-      std::string* s = reply.add_following();
+      std::string *s = reply.add_following();
       *s = f;
     }
   }
   rep->PackFrom(reply);
   LOG(INFO) << "Got profile for user " << username;
   return true;
+}
+
+bool Stream(Database *db, Any req, Any *rep) {
+  StreamRequest request;
+  StreamReply reply;
+  req.UnpackTo(&request);
+  std::string hashtag = request.hashtag();
+  std::optional<std::vector<std::string>> exists =
+      db->get("_hashtag_" + hashtag);
+  if (exists) {
+    for (auto s : (*exists)) {
+      warble::Warble *w = reply.add_warbles();
+      w->ParseFromString(s);
+    }
+    rep->PackFrom(reply);
+    LOG(INFO) << "Found warbles with hashtag " << hashtag;
+    return true;
+  } else {
+    LOG(INFO) << "Could not find warbles with hashtag " << hashtag;
+    return false;
+  }
 }

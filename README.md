@@ -68,3 +68,5 @@ If the `--user` flag is specified, you must include one of the following actions
   `--read <warble id>` - reads the warble thread starting at the given id
 
   `--profile` - gets the user’s profile of following and followers
+
+  `--stream "#<phrase>"` - streams warbles containing the given hashtag
