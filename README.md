@@ -1,6 +1,6 @@
 # Warble
 
-"Warble" is a command line interface that allows users to post Warbles (ie, Tweets), reply to specific Warbles, and read entire Warble threads, among other functions.
+"Warble" is a command line interface that allows users to post Warbles (ie, Tweets), reply to specific Warbles, and read entire Warble threads, among other functions. Class project for [CSCI 499](https://raghavan.usc.edu/2020-spring-robust-software-design-and-implementation/) at USC.
 
 ## Setup
 
